@@ -1,19 +1,13 @@
 
-import * as THREE from "three";
+import * as THREE from 'https://unpkg.com/three@0.154.0/build/three.module.js';
 
-// ==================================
-// 1. CREAR LA ESCENA
-// ==================================
+// =====================================
+// 1. CREAR ESCENA, CAMARA Y RENDERIZADOR
+// =====================================
 
 const scene = new THREE.Scene();
 
-// Color de fondo
 scene.background = new THREE.Color(0x202020);
-
-
-// ==================================
-// 2. CREAR LA CAMARA
-// ==================================
 
 const camera = new THREE.PerspectiveCamera(
     75,
@@ -22,90 +16,87 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 
-// Alejar la cámara del cubo
-camera.position.z = 5;
-
-
-// ==================================
-// 3. CREAR EL RENDERIZADOR
-// ==================================
-
 const renderer = new THREE.WebGLRenderer({
     antialias: true
 });
 
-// Ajustar el renderizador al tamaño de pantalla
-renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
-);
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-// Agregar el renderizador al documento
 document.body.appendChild(renderer.domElement);
 
 
-// ==================================
-// 4. CREAR LA GEOMETRIA
-// ==================================
+// =====================================
+// 2. CREAR GEOMETRIA Y MATERIAL
+// =====================================
 
-const geometry = new THREE.BoxGeometry(2, 2, 2);
+const geometry = new THREE.BoxGeometry(1, 1, 1);
 
-
-// ==================================
-// 5. CREAR EL MATERIAL
-// ==================================
-
-const material = new THREE.MeshBasicMaterial({
+const material = new THREE.MeshStandardMaterial({
     color: 0x00ff00
 });
 
-
-// ==================================
-// 6. CREAR EL CUBO
-// ==================================
-
-const cube = new THREE.Mesh(
-    geometry,
-    material
-);
-
-
-// ==================================
-// 7. AGREGAR EL CUBO A LA ESCENA
-// ==================================
+const cube = new THREE.Mesh(geometry, material);
 
 scene.add(cube);
 
 
-// ==================================
-// 8. CREAR LA ANIMACION
-// ==================================
+// =====================================
+// 3. AGREGAR LUZ DIRECCIONAL
+// =====================================
+
+const directionalLight = new THREE.DirectionalLight(
+    0xffffff,
+    1
+);
+
+directionalLight.position.set(5, 5, 5).normalize();
+
+scene.add(directionalLight);
+
+
+// =====================================
+// 4. AGREGAR LUZ AMBIENTAL
+// =====================================
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+
+scene.add(ambientLight);
+
+
+// =====================================
+// 5. POSICIONAR LA CAMARA
+// =====================================
+
+camera.position.z = 5;
+
+
+// =====================================
+// 6. FUNCION DE ANIMACION
+// =====================================
 
 function animate() {
 
-    requestAnimationFrame(animate);
-
-    // Rotación horizontal
-    cube.rotation.y += 0.01;
-
-    // Rotación vertical
+    // Rotacion en el eje X
     cube.rotation.x += 0.01;
 
-    // Dibujar la escena
+    // Rotacion en el eje Y
+    cube.rotation.y += 0.01;
+
+    // Renderizar la escena
     renderer.render(scene, camera);
 }
 
 
-// ==================================
-// 9. EJECUTAR LA ANIMACION
-// ==================================
+// =====================================
+// 7. INICIAR LA ANIMACION
+// =====================================
 
-animate();
+renderer.setAnimationLoop(animate);
 
 
-// ==================================
-// 10. AJUSTAR EL TAMAÑO DE LA VENTANA
-// ==================================
+// =====================================
+// 8. AJUSTAR EL TAMAÑO DE LA VENTANA
+// =====================================
 
 window.addEventListener('resize', () => {
 

@@ -1,9 +1,11 @@
 
 import * as THREE from 'https://unpkg.com/three@0.154.0/build/three.module.js';
 
-// Crear la escena, cámara y renderizador
+// Crear la escena
 const escena = new THREE.Scene();
+escena.background = new THREE.Color(0x000000);
 
+// Crear la cámara
 const camara = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
@@ -11,40 +13,78 @@ const camara = new THREE.PerspectiveCamera(
     1000
 );
 
-const renderer = new THREE.WebGLRenderer();
-
+// Crear el renderizador
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Crear geometría y material para el cubo
-const geometry = new THREE.BoxGeometry(1, 1, 1);
+// Crear iluminación
+const luz = new THREE.DirectionalLight(0xffffff, 1.5);
+luz.position.set(5, 5, 5);
+escena.add(luz);
 
-const material = new THREE.MeshStandardMaterial({
+// Iluminación ambiental
+const luzAmbiente = new THREE.AmbientLight(0xffffff, 0.35);
+escena.add(luzAmbiente);
+
+// Crear geometría para los cubos
+const geometria = new THREE.BoxGeometry(1.3, 1.3, 1.3);
+
+// Crear materiales
+const materialVerde = new THREE.MeshStandardMaterial({
     color: 0x00ff00
 });
 
-const cubo = new THREE.Mesh(geometry, material);
+const materialAzul = new THREE.MeshStandardMaterial({
+    color: 0x0000ff
+});
 
-escena.add(cubo);
+const materialRojo = new THREE.MeshStandardMaterial({
+    color: 0xff0000
+});
 
-// Agregar una luz direccional y ajustar su posición
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+// Crear los tres cubos
+const cuboVerde = new THREE.Mesh(geometria, materialVerde);
+const cuboAzul = new THREE.Mesh(geometria, materialAzul);
+const cuboRojo = new THREE.Mesh(geometria, materialRojo);
 
-directionalLight.position.set(5, 5, 5).normalize();
+// Posicionar los cubos
+cuboVerde.position.x = -2.2;
+cuboAzul.position.x = 0;
+cuboRojo.position.x = 2.2;
 
-escena.add(directionalLight);
+// Agregar los cubos a la escena
+escena.add(cuboVerde);
+escena.add(cuboAzul);
+escena.add(cuboRojo);
 
-// Posicionar la cámara
-camara.position.z = 5;
+// Posicionar cámara
+camara.position.z = 6;
 
-// Función de animación con rotación y renderizado
+// Animación con diferentes velocidades
 function animar() {
 
-    cubo.rotation.x += 0.01;
-    cubo.rotation.y += 0.01;
+    // Cubo verde: velocidad rápida
+    cuboVerde.rotation.x += 0.025;
+    cuboVerde.rotation.y += 0.025;
+
+    // Cubo azul: velocidad media
+    cuboAzul.rotation.x += 0.012;
+    cuboAzul.rotation.y += 0.012;
+
+    // Cubo rojo: velocidad lenta
+    cuboRojo.rotation.x += 0.006;
+    cuboRojo.rotation.y += 0.006;
 
     renderer.render(escena, camara);
 }
 
-// Iniciar la animación
+// Iniciar animación
 renderer.setAnimationLoop(animar);
+
+// Ajustar tamaño de pantalla
+window.addEventListener('resize', () => {
+    camara.aspect = window.innerWidth / window.innerHeight;
+    camara.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
